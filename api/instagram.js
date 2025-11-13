@@ -1,9 +1,9 @@
-import axios from "axios";
-import qs from "qs";
+const axios = require("axios");
+const qs = require("qs");
 
-export default async function handler(req, res) {
+module.exports = async function (req, res) {
   try {
-    const { username } = req.query;
+    const username = req.query.username;
 
     if (!username) {
       return res.status(400).json({ error: "username obrigatório" });
@@ -27,11 +27,11 @@ export default async function handler(req, res) {
 
     return res.status(200).json(response.data);
   } catch (error) {
-    console.log("ERRO RapidAPI >>>", error?.response?.data || error.message);
+    console.log("ERRO >>>", error?.response?.data || error.message);
 
     return res.status(500).json({
       error: "erro ao consultar instagram",
       detail: error?.response?.data || error.message,
     });
   }
-}
+};
