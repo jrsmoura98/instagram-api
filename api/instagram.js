@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async function (req, res) {
   try {
     const username = req.query.username;
 
@@ -36,4 +36,4 @@ export default async function handler(req, res) {
       detail: error.message
     });
   }
-}
+};
