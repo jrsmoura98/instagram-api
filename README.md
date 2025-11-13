@@ -1,31 +1,21 @@
-# Node.js Hello World
+# Instagram API Proxy
 
-Simple Node.js + Vercel example that returns a "Hello World" response.
+API simples usando Vercel Serverless Functions para consultar perfis do Instagram usando RapidAPI.
 
-## How to Use
+## 🔧 Endpoint
 
-You can choose from one of the following two methods to use this repository:
+GET /api/instagram?username=NOME_DO_USUARIO
 
-### One-Click Deploy
+## 📌 Exemplo
 
-Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=vercel-examples):
+GET /api/instagram?username=autoraluisamarinho
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https://github.com/vercel/examples/tree/main/solutions/node-hello-world&project-name=node-hello-world&repository-name=node-hello-world)
+## 🔐 Variáveis de Ambiente
 
-### Clone and Deploy
+Crie um .env.local ou adicione no painel da Vercel:
 
-```bash
-git clone https://github.com/vercel/examples/tree/main/solutions/node-hello-world
-```
+RAPIDAPI_KEY=SEU_TOKEN_RAPIDAPI
 
-Install the Vercel CLI:
+## 🚀 Deploy
 
-```bash
-npm i -g vercel
-```
-
-Then run the app at the root of the repository:
-
-```bash
-vercel dev
-```
+Este projeto funciona imediatamente ao fazer deploy no Vercel.
