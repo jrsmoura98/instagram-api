@@ -1,37 +1,50 @@
-const axios = require("axios");
-const qs = require("qs");
+import fetch from "node-fetch";
 
-module.exports = async function (req, res) {
+export default async function handler(req, res) {
   try {
-    const username = req.query.username;
+    const { username } = req.query;
 
     if (!username) {
       return res.status(400).json({ error: "username obrigatório" });
     }
 
-    const url =
-      "https://instagram-scraper-stable-api.p.rapidapi.com/ig_get_fb_profile.php";
-
-    const headers = {
-      "x-rapidapi-key": process.env.RAPIDAPI_KEY,
-      "x-rapidapi-host": "instagram-scraper-stable-api.p.rapidapi.com",
-      "Content-Type": "application/x-www-form-urlencoded"
-    };
-
-    const body = qs.stringify({
+    const body = new URLSearchParams({
       username_or_url: username,
-      data: "basic"
+      data: "basic",
     });
 
-    const response = await axios.post(url, body, { headers });
+    const response = await fetch(
+      "https://instagram-scraper-stable-api.p.rapidapi.com/ig_get_fb_profile.php",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "x-rapidapi-key": process.env.RAPIDAPI_KEY,
+          "x-rapidapi-host": "instagram-scraper-stable-api.p.rapidapi.com"
+        },
+        body: body.toString(),
+      }
+    );
 
-    return res.status(200).json(response.data);
+    const text = await response.text();
+
+    // Tenta converter pra JSON
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (err) {
+      return res.status(500).json({
+        error: "erro ao converter resposta",
+        instagram_raw: text.slice(0, 150)
+      });
+    }
+
+    return res.status(200).json(data);
+
   } catch (error) {
-    console.log("ERRO REAL:", error?.response?.data || error.message);
-
     return res.status(500).json({
-      error: "erro ao consultar instagram",
-      detail: error?.response?.data || error.message
+      error: "erro no servidor",
+      detail: error.message,
     });
   }
-};
+}
