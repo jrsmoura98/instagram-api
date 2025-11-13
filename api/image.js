@@ -1,4 +1,5 @@
 export default async function handler(req, res) {
+  // ----- CORS -----
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -6,29 +7,38 @@ export default async function handler(req, res) {
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
+  // -----------------
 
   try {
     const url = req.query.url;
+
     if (!url) {
-      return res.status(400).json({ error: "url obrigatória" });
+      return res.status(400).json({
+        error: "url obrigatória"
+      });
     }
 
-    // Baixa a imagem da CDN do Instagram
+    // Baixa a imagem da CDN do Instagram (ou qualquer outra)
     const instagramResponse = await fetch(url);
 
     if (!instagramResponse.ok) {
       return res.status(400).json({
-        error: "Não foi possível carregar a imagem do Instagram"
+        error: "Não foi possível carregar a imagem do Instagram",
+        status: instagramResponse.status
       });
     }
 
-    // Converte para buffer
+    // Converte a imagem para buffer
     const arrayBuffer = await instagramResponse.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // Replica cabeçalho correto
-    res.setHeader("Content-Type", instagramResponse.headers.get("content-type"));
+    // Define o tipo correto da imagem (jpeg, png, webp…)
+    const contentType = instagramResponse.headers.get("content-type");
+    if (contentType) {
+      res.setHeader("Content-Type", contentType);
+    }
 
+    // Envia a imagem ao navegador (agora sem CORS)
     return res.status(200).send(buffer);
 
   } catch (error) {
