@@ -1,8 +1,5 @@
-import fetch from "node-fetch";
-
-module.exports = async function (req, res) {
+export default async function handler(req, res) {
   try {
-    // CORS liberado
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -13,13 +10,12 @@ module.exports = async function (req, res) {
       return res.status(400).json({ error: "username obrigatório" });
     }
 
-    // Endpoint correto
     const url = "https://instagram-scraper-stable-api.p.rapidapi.com/ig_get_fb_profile.php";
 
-    const formBody = new URLSearchParams({
-      username_or_url: username,
-      data: "basic"
-    });
+    // 🚨 FORM-DATA da forma EXATA que a API exige
+    const formBody = new URLSearchParams();
+    formBody.append("username_or_url", username);
+    formBody.append("data", "basic");
 
     const response = await fetch(url, {
       method: "POST",
@@ -28,17 +24,25 @@ module.exports = async function (req, res) {
         "x-rapidapi-key": process.env.RAPIDAPI_KEY,
         "x-rapidapi-host": "instagram-scraper-stable-api.p.rapidapi.com"
       },
-      body: formBody
+      body: formBody.toString()
     });
 
-    const data = await response.json();
+    const rawText = await response.text();
 
-    // Se nada foi encontrado:
+    // 🚨 Debug opcional (mostra o HTML caso a API não responda)
+    if (!rawText.startsWith("{")) {
+      return res.status(500).json({
+        error: "Resposta inválida da API",
+        raw: rawText.slice(0, 200)
+      });
+    }
+
+    const data = JSON.parse(rawText);
+
     if (!data || !data.full_name) {
       return res.status(404).json({ error: "usuário não encontrado" });
     }
 
-    // Resposta formatada para FlutterFlow
     return res.status(200).json({
       nome: data.full_name,
       usuario: data.username,
@@ -57,4 +61,4 @@ module.exports = async function (req, res) {
       detail: error.message
     });
   }
-};
+}
