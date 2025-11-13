@@ -28,14 +28,13 @@ export default async function handler(req, res) {
 
     const text = await response.text();
 
-    // Tenta converter pra JSON
     let data;
     try {
       data = JSON.parse(text);
     } catch (err) {
       return res.status(500).json({
-        error: "erro ao converter resposta",
-        instagram_raw: text.slice(0, 150)
+        error: "Instagram devolveu resposta inválida",
+        raw: text.slice(0, 200)
       });
     }
 
