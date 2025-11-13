@@ -21,14 +21,14 @@ export default async function handler(req, res) {
       data: "basic",
     });
 
-    const response = await axios.post(url, body, { headers });
+    const response = await axios.post(url, body.toString(), { headers });
 
     return res.status(200).json(response.data);
 
   } catch (error) {
     return res.status(500).json({
       error: "erro ao consultar instagram",
-      detail: error?.response?.data || error.message,
+      detail: error?.response?.data ?? error.message,
     });
   }
 }
